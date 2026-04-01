@@ -1,0 +1,4 @@
+# Ignore the guide and any backup files
+THERMACORE_FLUTTER_GUIDE.md
+*.bak
+*.tmp

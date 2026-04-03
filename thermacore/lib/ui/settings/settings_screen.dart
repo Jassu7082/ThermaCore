@@ -9,7 +9,6 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final amoledMode = ref.watch(amoledModeProvider);
-    final tempUnit = ref.watch(tempUnitProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),

@@ -10,14 +10,13 @@ class FileExporter {
   Future<void> exportCsv(List<ThermalReading> readings, String sessionName) async {
     final buffer = StringBuffer();
     // Header row
-    buffer.writeln('timestamp,zone_id,temperature_c,temperature_f,status,throttling');
+    buffer.writeln('timestamp,zone_id,temperature_c,status,throttling');
 
     for (final r in readings) {
       buffer.writeln(
         '${r.timestamp.toIso8601String()},'
         '${r.zoneId},'
         '${r.temperatureCelsius.toStringAsFixed(3)},'
-        '${r.fahrenheit.toStringAsFixed(3)},'
         '${r.status.name},'
         '${r.isThrottling ? 1 : 0}',
       );
@@ -41,8 +40,6 @@ class FileExporter {
         'timestamp': r.timestamp.toIso8601String(),
         'zone_id': r.zoneId,
         'temperature_c': r.temperatureCelsius,
-        'temperature_f': r.fahrenheit,
-        'temperature_k': r.kelvin,
         'status': r.status.name,
         'throttling': r.isThrottling,
       }).toList(),

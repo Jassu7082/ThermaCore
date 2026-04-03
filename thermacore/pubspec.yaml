@@ -55,6 +55,13 @@ dev_dependencies:
   riverpod_generator: 2.4.0
   drift_dev: 2.18.0
   mockito: ^5.4.4
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/image/thermacore_icon_1024.png"
+  min_sdk_android: 26
 
 flutter:
   uses-material-design: true

@@ -67,9 +67,9 @@ class _DashboardContent extends ConsumerWidget {
                   // ── Radial Gauge ──────────────────────────────
                   Center(
                     child: RadialGauge(
-                      temperature: cpuReading.temperatureCelsius,
+                      temperature: cpuReading.smoothedTemperatureCelsius,
                       status: cpuReading.status,
-                      label: 'CPU TEMP',
+                      label: 'PU TEMP (SMOOTHED)',
                       minTemp: 20,
                       maxTemp: 90,
                     ),
@@ -111,6 +111,10 @@ class _DashboardContent extends ConsumerWidget {
                   SparklineChart(readings: readings),
                   const SizedBox(height: 24),
                   
+                  // ── Zone Guide ────────────────────────────────
+                  _ZoneGuide(),
+                  const SizedBox(height: 24),
+                  
                   // ── Cooling Score ─────────────────────────────
                   CoolingScoreCard(score: coolingScore),
                 ],
@@ -125,7 +129,46 @@ class _DashboardContent extends ConsumerWidget {
   ThermalReading _emptyReading() => ThermalReading(
         zoneId: 'unknown',
         temperatureCelsius: 0,
+        smoothedTemperatureCelsius: 0,
         timestamp: DateTime.now(),
         status: ThermalStatus.safe,
       );
+}
+
+class _ZoneGuide extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border.withOpacity(0.5)),
+      ),
+      child: ExpansionTile(
+        title: const Text(
+          'WHAT ARE THESE ZONES?',
+          style: TextStyle(
+            fontFamily: 'SpaceMono',
+            fontSize: 10,
+            letterSpacing: 2,
+            color: AppColors.primary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+        childrenPadding: const EdgeInsets.all(16),
+        expandedAlignment: Alignment.topLeft,
+        children: const [
+          Text(
+            'Thermal Zones are raw hardware sensors built into your device\'s silicon. Each manufacturer names them differently (e.g., "tsens", "soc", "mtk").\n\n'
+            '• CPU zones track individual core clusters.\n'
+            '• Battery zones track the charging IC.\n'
+            '• GPU zones track graphics processing heat.\n\n'
+            'Higher-end devices can have over 50 individual sensors!',
+            style: TextStyle(fontFamily: 'SpaceMono', fontSize: 11, color: AppColors.muted, height: 1.5),
+          ),
+        ],
+      ),
+    );
+  }
 }

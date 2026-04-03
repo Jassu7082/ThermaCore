@@ -32,6 +32,31 @@ class CoolingScoreCalculator {
     return score.round();
   }
 
+  /// Computes a score based on a list of historical readings (e.g. over 24h).
+  /// Penalizes frequent spikes and sustained high temperatures.
+  static int computeHistorical(List<ThermalReading> historicalReadings) {
+    if (historicalReadings.isEmpty) return 100;
+
+    // We can average the instant scores over time, or look for peak stress.
+    // For now, let's take a weighted average of the last N points.
+    double totalScore = 0;
+    int weightSum = 0;
+
+    // Give more weight to recent points (last 10% of data)
+    final recentCount = (historicalReadings.length * 0.1).ceil();
+    
+    for (int i = 0; i < historicalReadings.length; i++) {
+        final r = historicalReadings[i];
+        final instantScore = compute([r]);
+        final weight = (i >= historicalReadings.length - recentCount) ? 3 : 1;
+        
+        totalScore += instantScore * weight;
+        weightSum += weight;
+    }
+
+    return (totalScore / weightSum).round();
+  }
+
   static String scoreLabel(int score) {
     if (score >= 90) return 'EXCELLENT';
     if (score >= 70) return 'GOOD';

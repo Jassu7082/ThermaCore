@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../data/sources/thermal_channel.dart';
+import '../data/sources/thermal_database.dart';
 import '../data/repositories/thermal_repository.dart';
 import '../data/models/thermal_reading.dart';
 import '../domain/services/cooling_score_calculator.dart';
@@ -20,6 +21,10 @@ final thermalRepositoryProvider = Provider<ThermalRepository>((ref) {
 
 final sharedPreferencesProvider = FutureProvider<SharedPreferences>((ref) {
   return SharedPreferences.getInstance();
+});
+
+final thermalDatabaseProvider = Provider<ThermalDatabase>((ref) {
+  return ThermalDatabase();
 });
 
 final notificationsProvider = Provider<FlutterLocalNotificationsPlugin>((ref) {
@@ -65,19 +70,29 @@ final thermalStreamProvider = StreamProvider<List<ThermalReading>>((ref) {
 
 // ── Derived providers ─────────────────────────────────────────
 
+/// Cooling score based on the LAST HOUR of historical data.
 final coolingScoreProvider = Provider<int>((ref) {
-  final readings = ref.watch(thermalStreamProvider).valueOrNull ?? [];
-  return CoolingScoreCalculator.compute(readings);
+  final historyMap = ref.watch(historyProvider);
+  if (historyMap.isEmpty) return 100;
+
+  // Flatten all historical points into a single list for the calculator
+  final List<ThermalReading> allPoints = historyMap.values.expand((list) => list).cast<ThermalReading>().toList();
+  return CoolingScoreCalculator.computeHistorical(allPoints);
 });
 
 final selectedZoneProvider = StateProvider<String?>((ref) => null);
 
-// ── History buffer (in-memory ring buffer of last 60 readings) ─
+// ── History buffer (Syncs with Drift SQLite) ───────────────────
 
 final historyProvider =
     StateNotifierProvider<HistoryNotifier, Map<String, List<ThermalReading>>>(
   (ref) {
-    final notifier = HistoryNotifier();
+    final db = ref.watch(thermalDatabaseProvider);
+    final notifier = HistoryNotifier(db);
+    
+    // In a real app, we'd trigger an initial load here.
+    // For this implementation, we'll start fresh in-memory and persist going forward.
+
     ref.listen<AsyncValue<List<ThermalReading>>>(
       thermalStreamProvider,
       (_, next) => next.whenData(notifier.addReadings),
@@ -87,18 +102,38 @@ final historyProvider =
 );
 
 class HistoryNotifier extends StateNotifier<Map<String, List<ThermalReading>>> {
-  static const _maxPoints = 60;
+  static const _maxPointsInMemory = 60;
+  final ThermalDatabase _db;
 
-  HistoryNotifier() : super({});
+  HistoryNotifier(this._db) : super({});
 
   void addReadings(List<ThermalReading> readings) {
     final next = Map<String, List<ThermalReading>>.from(state);
+    final List<ThermalReadingsCompanion> companions = [];
+
     for (final r in readings) {
+      // Update Memory State (Ring Buffer for Sparkline)
       final list = List<ThermalReading>.from(next[r.zoneId] ?? [])..add(r);
-      if (list.length > _maxPoints) list.removeAt(0);
+      if (list.length > _maxPointsInMemory) list.removeAt(0);
       next[r.zoneId] = list;
+
+      // Prepare for Database (Persistence)
+      companions.add(ThermalReadingsCompanion.insert(
+        zoneId: r.zoneId,
+        temperatureCelsius: r.temperatureCelsius,
+        timestamp: r.timestamp,
+        statusIndex: r.status.index,
+        isThrottling: r.isThrottling,
+      ));
     }
+    
     state = next;
+    
+    // Batch Insert into SQLite
+    _db.insertReadings(companions);
+    
+    // Cleanup old data periodically (e.g. older than 24h)
+    _db.deleteOldReadings(DateTime.now().subtract(const Duration(hours: 24)));
   }
 }
 

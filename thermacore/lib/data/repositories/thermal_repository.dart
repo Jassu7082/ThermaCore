@@ -6,6 +6,10 @@ import '../../core/constants/thermal_constants.dart';
 
 class ThermalRepository {
   final ThermalChannel _channel;
+  
+  // EMA factor: 0.15 gives heavy smoothing, 1.0 means raw data.
+  static const double _emaAlpha = 0.15;
+  final Map<String, double> _emaState = {};
 
   ThermalRepository(this._channel);
 
@@ -58,11 +62,18 @@ class ThermalRepository {
         ),
       );
 
+      // Apply Exponential Moving Average (EMA)
+      final smoothedC = _emaState.containsKey(entry.key)
+          ? (_emaAlpha * tempC) + ((1 - _emaAlpha) * _emaState[entry.key]!)
+          : tempC;
+      _emaState[entry.key] = smoothedC;
+
       readings.add(ThermalReading(
         zoneId: entry.key,
         temperatureCelsius: tempC,
+        smoothedTemperatureCelsius: smoothedC,
         timestamp: now,
-        status: tempC.toStatus(
+        status: smoothedC.toStatus( // use smoothed for status UI stability
           warm: zone.warningThreshold ?? ThermalConstants.defaultWarmThreshold,
           hot: (zone.warningThreshold ?? ThermalConstants.defaultWarmThreshold) + 10,
           critical: zone.criticalThreshold ?? ThermalConstants.defaultCriticalThreshold,

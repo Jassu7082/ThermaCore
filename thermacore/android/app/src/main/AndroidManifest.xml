@@ -31,7 +31,6 @@
         android:label="ThermaCore"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/LaunchTheme"
         android:hardwareAccelerated="true"

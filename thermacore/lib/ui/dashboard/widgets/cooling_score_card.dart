@@ -76,10 +76,19 @@ class CoolingScoreCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Aggregated health across all thermal zones.',
+                  '24-HOUR COOLING HEALTH',
                   style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.white60,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white70,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Aggregated health based on historical patterns and peak thermal stress.',
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.white54,
                   ),
                 ),
               ],

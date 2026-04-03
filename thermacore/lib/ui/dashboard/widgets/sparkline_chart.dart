@@ -67,7 +67,7 @@ class SparklineChart extends ConsumerWidget {
 
   LineChartData _buildChart(List<ThermalReading> points) {
     final spots = points.asMap().entries.map((e) {
-      return FlSpot(e.key.toDouble(), e.value.temperatureCelsius);
+      return FlSpot(e.key.toDouble(), e.value.smoothedTemperatureCelsius);
     }).toList();
 
     final latest = points.last;
@@ -126,6 +126,7 @@ class SparklineChart extends ConsumerWidget {
   ThermalReading _emptyReading() => ThermalReading(
     zoneId: 'unknown',
     temperatureCelsius: 0,
+    smoothedTemperatureCelsius: 0,
     timestamp: DateTime.now(),
     status: ThermalStatus.safe,
   );

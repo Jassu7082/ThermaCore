@@ -65,7 +65,7 @@ class ZoneChip extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              unit.label(reading.temperatureCelsius),
+              unit.label(reading.smoothedTemperatureCelsius),
               style: TextStyle(
                 fontFamily: 'Orbitron',
                 fontSize: 15,

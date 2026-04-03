@@ -14,7 +14,7 @@ class AppTheme {
     dividerColor: AppColors.border,
     cardColor: AppColors.surface,
     useMaterial3: true,
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: AppColors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),

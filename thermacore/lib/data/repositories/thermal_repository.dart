@@ -52,6 +52,9 @@ class ThermalRepository {
         tempC = ThermalZone.milliToC(rawValue);
       }
 
+      // Filter out absolute zero (-273) or non-functioning sensors below 20°C
+      if (tempC < 20.0) continue;
+
       // Find matching zone config for custom thresholds
       final zone = zones.firstWhere(
         (z) => z.id == entry.key,

@@ -25,28 +25,6 @@ class SettingsScreen extends ConsumerWidget {
             activeColor: AppColors.primary,
           ),
           
-          const SizedBox(height: 24),
-          _SectionHeader('PREFERENCES'),
-          ListTile(
-            title: const Text('Temperature Unit', style: TextStyle(fontFamily: 'SpaceMono')),
-            trailing: SegmentedButton<TempUnit>(
-              segments: const [
-                ButtonSegment(value: TempUnit.celsius, label: Text('°C')),
-                ButtonSegment(value: TempUnit.fahrenheit, label: Text('°F')),
-                ButtonSegment(value: TempUnit.kelvin, label: Text('K')),
-              ],
-              selected: {tempUnit},
-              onSelectionChanged: (set) => ref.read(tempUnitProvider.notifier).state = set.first,
-              style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.resolveWith((states) => 
-                  states.contains(WidgetState.selected) ? AppColors.primary.withOpacity(0.2) : Colors.transparent),
-                foregroundColor: WidgetStateProperty.resolveWith((states) => 
-                  states.contains(WidgetState.selected) ? AppColors.primary : AppColors.muted),
-                side: const WidgetStatePropertyAll(BorderSide(color: AppColors.border)),
-              ),
-            ),
-          ),
-          
           const SizedBox(height: 40),
           const Center(
             child: Text(

@@ -14,7 +14,6 @@ class ZoneDetailScreen extends ConsumerWidget {
     if (zoneId == null) return const Scaffold(body: Center(child: Text('No zone selected')));
 
     final thermalAsync = ref.watch(thermalStreamProvider);
-    final unit = ref.watch(tempUnitProvider);
     final friendlyName = ThermalConstants.getFriendlyName(zoneId);
 
     return Scaffold(
@@ -49,7 +48,7 @@ class ZoneDetailScreen extends ConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            unit.label(reading.smoothedTemperatureCelsius),
+                            '${reading.smoothedTemperatureCelsius.toStringAsFixed(1)}°C',
                             style: TextStyle(
                               fontFamily: 'Orbitron',
                               fontSize: 48,

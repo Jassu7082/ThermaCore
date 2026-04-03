@@ -17,9 +17,6 @@ class ThermalReading {
     this.isThrottling = false,
   });
 
-  double get fahrenheit => (smoothedTemperatureCelsius * 9 / 5) + 32;
-  double get kelvin => smoothedTemperatureCelsius + 273.15;
-
   ZoneCategory get category => ThermalConstants.getCategory(zoneId);
 
   ThermalReading copyWith({double? temperatureCelsius, double? smoothedTemperatureCelsius, ThermalStatus? status}) {

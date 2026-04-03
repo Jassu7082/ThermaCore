@@ -41,24 +41,7 @@ final pollingIntervalProvider = StateProvider<Duration>((ref) {
   return ThermalConstants.defaultPollingInterval;
 });
 
-final tempUnitProvider = StateProvider<TempUnit>((ref) => TempUnit.celsius);
-
 final amoledModeProvider = StateProvider<bool>((ref) => false);
-
-enum TempUnit { celsius, fahrenheit, kelvin }
-
-extension TempUnitX on TempUnit {
-  String label(double celsius) => switch (this) {
-    TempUnit.celsius    => '${celsius.toStringAsFixed(1)}°C',
-    TempUnit.fahrenheit => '${((celsius * 9 / 5) + 32).toStringAsFixed(1)}°F',
-    TempUnit.kelvin     => '${(celsius + 273.15).toStringAsFixed(1)} K',
-  };
-  String get name => switch (this) {
-    TempUnit.celsius    => '°C',
-    TempUnit.fahrenheit => '°F',
-    TempUnit.kelvin     => 'K',
-  };
-}
 
 // ── Live temperature stream ───────────────────────────────────
 

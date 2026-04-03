@@ -14,7 +14,6 @@ class ZoneChip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final color = AppColors.forStatus(reading.status);
-    final unit = ref.watch(tempUnitProvider);
     final friendlyName = ThermalConstants.getFriendlyName(reading.zoneId);
 
     return GestureDetector(
@@ -65,7 +64,7 @@ class ZoneChip extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              unit.label(reading.smoothedTemperatureCelsius),
+              '${reading.smoothedTemperatureCelsius.toStringAsFixed(1)}°C',
               style: TextStyle(
                 fontFamily: 'Orbitron',
                 fontSize: 15,

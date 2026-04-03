@@ -3,8 +3,8 @@
 ThermaCore is an F-Droid-compliant Android application built with Flutter that provides deep system-level thermal monitoring by reading hardware sensors directly from sysfs (`/sys/class/thermal/`).
 
 ## Features
-* **Zero Network Permissions**: Strict F-Droid compliance (no trackers, no analytics).
-* **EMA Smoothing**: Advanced Exponential Moving Average filter ensures stable, jitter-free temperature readings.
+* **Celsius Standard**: Professional, localized temperature reporting exclusively in Celsius for maximum precision and system clarity (Fahrenheit/Kelvin removed for UX simplicity).
+* **EMA Smoothing**: Advanced Exponential Moving Average filter ensures stable, jitter-free Celsius readings.
 * **Persistent History (SQLite)**: Integrated Drift database for 24-hour historical data retrieval.
 * **24-Hour Cooling Score**: Analyzes historical peak stress and average health to give a more realistic performance score.
 * **Direct Hardware Access**: Uses a native Kotlin background service to read sysfs hardware sensors.
